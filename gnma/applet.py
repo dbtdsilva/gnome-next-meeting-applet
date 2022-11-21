@@ -288,16 +288,15 @@ class Applet(goacal.GnomeOnlineAccountCal):
 
     def add_current_day(self, menu, event, currentday):
         event_day = event.start_dttime.strftime("%A %d %B %Y")
-        if currentday != "":
-            menu.append(gtk.MenuItem(label=""))
-        todayitem = gtk.MenuItem(label=f'<span size="large">{event_day}</span>')
+        icon = '&#x1F5D3;'
+        todayitem = gtk.MenuItem(label=f'<span size="large"><b>{icon} {event_day}</b></span>')
         todayitem.get_child().set_use_markup(True)
         prefix_url = self.config["calendar_day_prefix_url"]
         # this only works with google calendar i think
         todayitem.location = f"{prefix_url}/{event.start_dttime.strftime('%Y/%m/%d')}"
         todayitem.connect("activate", self.open_source_location)
-        menu.append(todayitem)
         menu.append(gtk.SeparatorMenuItem())
+        menu.append(todayitem)
         return menu
 
     def match_videocall_url_from_summary(self, event) -> str:
