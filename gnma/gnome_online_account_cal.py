@@ -4,7 +4,7 @@ import logging
 
 import gi  # type:ignore
 
-from gnma import types
+from gnma import gtypes
 
 gi.require_version("ECal", "2.0")
 gi.require_version("EDataServer", "1.2")
@@ -77,7 +77,7 @@ class GnomeOnlineAccountCal:
             client = ECal.Client.connect_finish(res)
             client.set_default_timezone(self.zone)
 
-            calendar = types.CalendarInfo(source, client)
+            calendar = gtypes.CalendarInfo(source, client)
             self.calendars[source.get_uid()] = calendar
 
             # self.interface.set_property("has-calendars", True)
@@ -176,24 +176,16 @@ class GnomeOnlineAccountCal:
         start_dttime = datetime.datetime.fromtimestamp(start_timet)
         end_timet = instance_end.as_timet_with_zone(dte_timezone)
         end_dttime = datetime.datetime.fromtimestamp(end_timet)
-        mod_prop = ical_comp.get_first_property(
-            ICalGLib.PropertyKind.LASTMODIFIED_PROPERTY
-        )
-        ical_time_modified = mod_prop.get_lastmodified()
-        # Modified time "last-modified" is utc
-        mod_timet = ical_time_modified.as_timet()
-        mod_dttime = datetime.datetime.fromtimestamp(mod_timet)
 
         uid = self.create_uid(calendar, comp)
         if not uid in self.all_events:
-            self.all_events[uid] = types.Event(
+            self.all_events[uid] = gtypes.Event(
                 uid,
                 calendar.color,
                 summary,
                 all_day,
                 start_dttime,
                 end_dttime,
-                mod_dttime,
                 comp,
             )
         # pylint: disable=no-member
@@ -255,29 +247,16 @@ class GnomeOnlineAccountCal:
                         60 * 30
                     )  # Default to 30m if the end time is bad.
 
-                mod_prop = ical_comp.get_first_property(
-                    ICalGLib.PropertyKind.LASTMODIFIED_PROPERTY
-                )
-                # sometime the mod_prop doesn't get set then let's skip this entry
-                # related: https://github.com/chmouel/gnome-next-meeting-applet/issues/27
-                if not mod_prop:
-                    return
-                ical_time_modified = mod_prop.get_lastmodified()
-                # Modified time "last-modified" is utc
-                mod_timet = ical_time_modified.as_timet()
-
                 start_dttime = datetime.datetime.fromtimestamp(start_timet)
                 end_dttime = datetime.datetime.fromtimestamp(end_timet)
-                mod_dttime = datetime.datetime.fromtimestamp(mod_timet)
 
-                self.all_events[uid] = types.Event(
+                self.all_events[uid] = gtypes.Event(
                     uid,
                     calendar.color,
                     summary,
                     all_day,
                     start_dttime,
                     end_dttime,
-                    mod_dttime,
                     comp,
                 )
                 # pylint: disable=no-member

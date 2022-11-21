@@ -17,7 +17,6 @@ class Event:
         all_day: bool,
         start_dttime: datetime.datetime,
         end_dttime: datetime.datetime,
-        mod_dttime: datetime.datetime,
         comp: str,
     ):
         self.__dict__.update(locals())
